@@ -27,10 +27,12 @@ module.exports = {
       phone: Joi.number().optional(),
     });
 
-    const validationResult = schema.validate(req.body);
-    if (validationResult.error) {
-      return res.status(400).json({ message: validationResult.error });
-    }
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+      error.status = 400;
+      next(error);
+    };
     next();
   },
 };
