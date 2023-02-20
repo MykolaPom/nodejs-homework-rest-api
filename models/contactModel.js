@@ -1,24 +1,33 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-const contactSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Set name for contact"],
-    unique: [true, "This name already exists"],
+const contactSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Set name for contact"],
+      unique: [true, "This name already exists"],
+    },
+    email: {
+      type: String,
+    },
+    phone: {
+      type: String,
+      unique: [true, "This number already exists"],
+    },
+    favorite: {
+      type: Boolean,
+      default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    }
   },
-  email: {
-    type: String,
-  },
-  phone: {
-    type: String,
-    unique: [true, "This number already exists"],
-  },
-  favorite: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { versionKey: false, timestamps: true }
+);
 
-const ContactSchema = mongoose.model("contact", contactSchema);
+
+const ContactSchema = model("contact", contactSchema);
 
 module.exports = ContactSchema;
