@@ -1,37 +1,32 @@
 const express = require("express");
-const { cntrlWrap } = require("../../middlewares/cntrlWrap");
+const ctrl = require("../../controllers/contacts");
+const { ctrlWrapper } = require("../../helpers");
 
-const { authValidation } = require("../../middlewares/authValidation");
-const { schemaContact } = require("../../middlewares/schemaContact");
-const { validation } = require("../../middlewares/validation");
+const { isValidId, authenticate } = require("../../middlewares");
 
 const {
   addContactValidation,
   putContactValidation,
 } = require("../../middlewares/validationMiddleware");
 
-const {
-  getListOfContacts,
-  getContactById,
-  addContact,
-  updateContact,
-  removeContact,
-  updateFavorite,
-} = require("../../controllers/contactController");
-
 const router = new express.Router();
 
-router.use(authValidation); // мідлвар для всіх маршрутів
-router.get("/", cntrlWrap(getListOfContacts));
-router.get("/:contactId", cntrlWrap(getContactById));
-router.post(
-  "/",
-  addContactValidation,
-  validation(schemaContact),
-  cntrlWrap(addContact)
+router.use(authenticate);
+
+router.get("/", ctrlWrapper(ctrl.getListOfContacts));
+router.get("/:contactId", isValidId, ctrlWrapper(ctrl.getContactById));
+router.post("/", addContactValidation, ctrlWrapper(ctrl.addContact));
+router.delete("/:contactId", isValidId, ctrlWrapper(ctrl.removeContact));
+router.put(
+  "/:contactId",
+  isValidId,
+  putContactValidation,
+  ctrlWrapper(ctrl.updateContact)
 );
-router.delete("/:contactId", cntrlWrap(removeContact));
-router.put("/:contactId", putContactValidation, cntrlWrap(updateContact));
-router.patch("/:contactId/favorite", cntrlWrap(updateFavorite));
+router.patch(
+  "/:contactId/favorite",
+  isValidId,
+  ctrlWrapper(ctrl.updateFavorite)
+);
 
 module.exports = router;

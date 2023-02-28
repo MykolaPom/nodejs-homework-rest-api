@@ -1,41 +1,22 @@
 const express = require("express");
-const { cntrlWrap } = require("../../middlewares/cntrlWrap");
-const { validation } = require("../../middlewares/validation");
+const ctrl = require("../../controllers/users");
+const { ctrlWrapper } = require("../../helpers");
+
+const { authenticate, logoutMiddleware } = require("../../middlewares");
 
 const {
-  schemaUserRegistration,
-  schemaUserLogin,
-  schemaSubscription,
-} = require("../../middlewares/userValidation");
+  signupValidation,
+  loginValidation,
+} = require("../../middlewares/validationMiddleware");
 
-const { authValidation } = require("../../middlewares/authValidation");
+const router = new express.Router();
 
-const { userSubscription } = require("../../controllers/userSubscription");
+router.post("/register", signupValidation, ctrlWrapper(ctrl.signupUser));
+router.post("/login", loginValidation, ctrlWrapper(ctrl.loginUser));
 
-const {
-  signupController,
-  loginController,
-  logoutController,
-} = require("../../controllers/authController");
+router.get("/current", authenticate, ctrlWrapper(ctrl.getCurrentUser));
+router.post("/logout", logoutMiddleware, ctrlWrapper(ctrl.logoutUser));
 
-const { getCurrentUser } = require("../../controllers/getCurrentUser");
-
-const router = express.Router();
-
-router.post(
-  "/signup",
-  validation(schemaUserRegistration),
-  cntrlWrap(signupController)
-);
-
-router.post("/login", validation(schemaUserLogin), cntrlWrap(loginController));
-router.get("/logout", authValidation, cntrlWrap(logoutController));
-router.get("/current", authValidation, cntrlWrap(getCurrentUser));
-router.patch(
-  "/",
-  authValidation,
-  validation(schemaSubscription),
-  cntrlWrap(userSubscription)
-);
+router.patch("/", authenticate, ctrlWrapper(ctrl.userSubscription));
 
 module.exports = router;
