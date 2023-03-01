@@ -6,8 +6,6 @@ const User = require("../../models/userModel");
 const { LoginAuthError } = require("../../helpers/HttpError");
 
 const loginUser = async (req, res) => {
-  console.log("logedin user --->", req.user);
-
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });

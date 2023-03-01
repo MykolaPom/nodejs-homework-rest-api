@@ -6,7 +6,6 @@ const {
 
 const signupUser = async (req, res) => {
 
-  console.log(req.user);
   const { email, password } = req.body;
 
     if (await User.findOne({ email })) {

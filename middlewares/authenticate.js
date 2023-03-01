@@ -8,21 +8,18 @@ const authenticate = async (req, res, next) => {
   try {
     const [tokenType, token] = req.headers["authorization"].split(" ");
 
-    console.log(tokenType, token);
-
     if (!token) {
       next(new LoginAuthError("Not authorized"));
     }
 
-    const user = jwt.decode(token, process.env.JWT_SECRET_KEY);
-    const auditUser = await User.findById(user._id);
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const authenticatedUser = await User.findById(decodedToken._id);
 
-    if (!auditUser || token !== auditUser.token) {
+    if (!authenticatedUser || token !== authenticatedUser.token) {
       throw new LoginAuthError("Not authorized");
     }
 
-    req.token = token;
-    req.user = user;
+    req.user = authenticatedUser;
 
     next();
   } catch (error) {
