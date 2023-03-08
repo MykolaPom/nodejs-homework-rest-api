@@ -9,11 +9,11 @@ const signupUser = async (req, res) => {
 
   const { email, password } = req.body;
 
-  const avatarURL = gravatar.url(email);
+  if (await User.findOne({ email })) {
+    throw new RegistrationConflictError("Email is use");
+  }
 
-    if (await User.findOne({ email })) {
-      throw new RegistrationConflictError("Email is use");
-    }
+  const avatarURL = gravatar.url(email);
 
   const user = new User({
     email,
