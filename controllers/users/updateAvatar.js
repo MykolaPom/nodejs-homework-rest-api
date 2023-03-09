@@ -26,8 +26,8 @@ const updateAvatar = async (req, res) => {
       file.resize(250, 250).quality(60).write(`${AVATARS_DIR}/${avatarName}`);
     });
 
-    const avatarURL = `http://localhost:${PORT}/${AVATARS_DIR}/filename`;
-  
+    const avatarURL = `http://localhost:${PORT}/${AVATARS_DIR}/${avatarName}`;
+
     await User.findByIdAndUpdate(_id, { avatarURL });
 
     res.status(200).json({ status: "success", avatarURL });
