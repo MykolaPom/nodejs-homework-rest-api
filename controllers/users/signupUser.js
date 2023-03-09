@@ -1,4 +1,5 @@
 const User = require("../../models/userModel");
+const gravatar = require("gravatar");
 
 const {
   RegistrationConflictError,
@@ -8,13 +9,16 @@ const signupUser = async (req, res) => {
 
   const { email, password } = req.body;
 
-    if (await User.findOne({ email })) {
-      throw new RegistrationConflictError("Email is use");
-    }
+  if (await User.findOne({ email })) {
+    throw new RegistrationConflictError("Email is use");
+  }
+
+  const avatarURL = gravatar.url(email);
 
   const user = new User({
     email,
     password,
+    avatarURL,
   });
 
   await user.save();
@@ -24,6 +28,7 @@ const signupUser = async (req, res) => {
       id: user._id,
       email: user.email,
       subscription: user.subscription,
+      avatarURL: user.avatarURL,
     });
 };
 
