@@ -8,10 +8,10 @@ const { LoginAuthError } = require("../../helpers/HttpError");
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, verify: true });
 
   if (!user) {
-    throw new LoginAuthError("Email is wrong");
+    throw new LoginAuthError("Email is wrong or verification failed");
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
@@ -27,7 +27,7 @@ const loginUser = async (req, res) => {
   );
 
   await User.findByIdAndUpdate(user._id, { token }, { runValidators: true });
-  
+
   res.status(200).json({ status: "success", token });
 };
 
